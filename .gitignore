@@ -1,0 +1,19 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# Build output
+dist/
+build/
+
+# Environment variables
+*.env
+server/.env
+client/.env
+
+# Editor / OS junk
+.vscode/
+.DS_Store
+Thumbs.db
