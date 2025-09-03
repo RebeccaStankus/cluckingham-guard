@@ -1,0 +1,28 @@
+.av-pill {
+     pointer-events: auto;
+     display: inline-flex;
+     align-items: center;
+     gap: 10px;
+     padding: 8px 12px;
+     border-radius: 999px;
+     background: rgba(0, 0, 0, .65);
+     backdrop-filter: blur(4px);
+     border: none;
+     max-width: 360px;
+}
+
+.mute-btn {
+     width: 34px;
+     height: 34px;
+     display: grid;
+     place-items: center;
+     background: rgba(0, 0, 0, 0.199);
+     color: #faf5d8;
+     border: 1px solid rgba(0, 0, 0, 0.842);
+     cursor: pointer;
+     font: 700 14px/1 system-ui;
+}
+
+.mute-btn:hover {
+     background: rgba(0, 0, 0, .7);
+}

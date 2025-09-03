@@ -1,0 +1,22 @@
+@font-face {
+     font-family: 'Luminari';
+     src: url('/fonts/Luminari-Regular.woff2') format('woff2');
+     font-weight: normal;
+     font-style: normal;
+}
+
+body {
+     background-color: rgb(15, 4, 0);
+     color: #faf5d8;
+     font-family: 'Luminari', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+.main {
+     max-width: 960px;
+     margin: 12px auto;
+}
+
+.title {
+     font-size: 48pt;
+     text-align: center;
+}

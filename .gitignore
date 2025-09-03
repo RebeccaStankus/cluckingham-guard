@@ -1,19 +1,27 @@
-# Node dependencies
-node_modules/
-npm-debug.log*
-yarn.lock
-pnpm-lock.yaml
+node_modules
+dist
 
-# Build output
-dist/
-build/
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
 
-# Environment variables
-*.env
-server/.env
-client/.env
-
-# Editor / OS junk
-.vscode/
+# OS
 .DS_Store
 Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# SvelteKit
+.svelte-kit/
