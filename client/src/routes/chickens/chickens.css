@@ -1,0 +1,133 @@
+.chickens-page {
+     color: #2f848f;
+}
+
+.form {
+     display: grid;
+     gap: 0.75rem;
+     max-width: 480px;
+}
+
+.field {
+     display: flex;
+     flex-direction: column;
+}
+
+.label {
+     font-size: 0.9rem;
+     opacity: 0.8;
+     margin-bottom: 0.25rem;
+}
+
+.input {
+     padding: 0.5rem;
+     border: 1px solid #ccc;
+     border-radius: 6px;
+}
+
+.btn {
+     padding: 0.6rem 1rem;
+     border-radius: 6px;
+     background: #1a73e8;
+     color: white;
+     border: none;
+}
+
+.error {
+     color: #b00020;
+}
+
+.list {
+     display: flex;
+     flex-wrap: wrap;
+     justify-content: center;
+     gap: 40px;
+     margin-top: 20px;
+}
+
+.card {
+     height: 300px;
+     width: 200px;
+     background: #d3d9da;
+     border-radius: 8px;
+     padding: 0.75rem;
+}
+
+.card:hover {
+     transform: scale(1.1);
+     background-color: #f1f8fa;
+}
+
+.card__name {
+     font-weight: 600;
+}
+
+.card__meta {
+     font-size: 0.9rem;
+     margin-top: 6px;
+}
+
+.card__img {
+     margin-top: 10px;
+     margin-bottom: 10px;
+     max-width: 100%;
+     max-height: 50%;
+     object-fit: contain;
+     border-radius: 6px;
+     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.466);
+     text-align: center;
+     display: block;
+     margin-inline: auto;
+}
+
+.backdrop {
+     position: fixed;
+     inset: 0;
+     display: grid;
+     place-items: center;
+     background: rgba(0, 0, 0, 0.45);
+     backdrop-filter: blur(2px);
+     z-index: 9999;
+}
+
+.modal {
+     min-width: 280px;
+     max-width: 90vw;
+     padding: 1rem 1.25rem;
+     border-radius: 12px;
+     background: #d3d9da;
+     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+     color: #2f848f;
+}
+
+.add-chicken-button {
+     color: #2f848f;
+     background-color: #7dcad6;
+     border: none;
+     border-radius: 6px;
+     height: 40px;
+     width: 60px;
+     font-size: 20pt;
+     font-weight: 600;
+     line-height: 100%;
+     padding-top: 0;
+     margin-top: 20px;
+     margin-left: auto;
+     display: block;
+}
+
+.add-chicken-button:hover {
+     background-color: rgba(81, 200, 218, 0.815);
+}
+
+.add-chicken-button:active {
+     transform: scale(0.9);
+     background-color: #2ac2da
+}
+
+.card__header {
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: baseline;
+}

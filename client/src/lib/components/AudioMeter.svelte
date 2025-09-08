@@ -1,4 +1,5 @@
 <script lang="ts">
+   // Constant for centering waveform values (0–255 range → centered at 128)
    const BYTE_CENTER = 128;
    export let gain = 4;
 
@@ -47,8 +48,6 @@
       audioByteData = new Uint8Array(analyzer.frequencyBinCount) as unknown as Uint8Array<ArrayBuffer>;
 
       const updateAudioMeter = () => {
-         // Constant for centering waveform values (0–255 range → centered at 128)
-
          if (!running || !analyzer || !audioByteData || !canvas) return;
 
          analyzer.getByteTimeDomainData(audioByteData);

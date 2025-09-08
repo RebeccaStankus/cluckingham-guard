@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+const path = require("path");
 import dotenv from "dotenv";
 import { spawn } from "child_process";
 
@@ -9,11 +10,13 @@ const app = express();
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
+dotenv.config({ path: path.join(__dirname, "../../client/.env") });
+
 const PORT = Number(process.env.PORT) || 5000;
 const CAMERA_URL = process.env.CAMERA_URL || "";
 
 if (!CAMERA_URL) {
-     console.warn("⚠️  CAMERA_URL is not set in server/.env");
+     console.warn("⚠️  CAMERA_URL is not set in .env");
 }
 
 app.get("/health", (_req: Request, res: Response) => {

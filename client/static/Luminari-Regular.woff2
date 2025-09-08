@@ -1,4 +1,0 @@
-[ZoneTransfer]
-ZoneId=3
-ReferrerUrl=https://cloudconvert.com/
-HostUrl=https://us-east.storage.cloudconvert.com/tasks/58f2170c-e125-4a4f-834e-bf791aa63953/Luminari-Regular.woff2?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250901%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250901T202459Z&X-Amz-Expires=86400&X-Amz-Signature=74cb44598874e6f1f898be60667a2673df62958ff1fd6b1afd0c27f13b355e37&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22Luminari-Regular.woff2%22&response-content-type=font%2Fwoff2&x-id=GetObject
