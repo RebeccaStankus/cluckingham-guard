@@ -1,4 +1,5 @@
 <script lang="ts">
+   import { onDestroy } from "svelte";
    import WebRTCPlayer from "$lib/components/WebRTCPlayer.svelte";
    import AudioMeter from "$lib/components/AudioMeter.svelte";
 
@@ -22,6 +23,25 @@
       e.stopPropagation();
       player?.toggleMute();
    }
+
+   // ── Nest status ────────────────────────────────────────────────────
+   let nestOccupied = false;
+
+   async function pollNest() {
+      try {
+         const res = await fetch("http://localhost:5000/events");
+         const data = await res.json();
+         if (data.length > 0) {
+            nestOccupied = data[0].type === "nest_occupied";
+         }
+      } catch {
+         // server not reachable, leave status as-is
+      }
+   }
+
+   pollNest();
+   const nestInterval = setInterval(pollNest, 5000);
+   onDestroy(() => clearInterval(nestInterval));
 </script>
 
 <svelte:head>
@@ -36,3 +56,23 @@
       </div>
    </WebRTCPlayer>
 </section>
+
+{#if stream}
+   <p class="nest-status" class:occupied={nestOccupied}>
+      {nestOccupied ? "A bird is on the nest!" : "No bird on the nest."}
+   </p>
+{/if}
+
+<style>
+   .nest-status {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      color: #8de1ec;
+      opacity: 0.5;
+   }
+   .nest-status.occupied {
+      opacity: 1;
+      font-weight: bold;
+   }
+</style>

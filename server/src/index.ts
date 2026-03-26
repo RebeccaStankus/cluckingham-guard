@@ -3,6 +3,7 @@ import cors from "cors";
 const path = require("path");
 import dotenv from "dotenv";
 import { spawn } from "child_process";
+import { MongoClient, Collection } from "mongodb";
 
 dotenv.config();
 
@@ -14,11 +15,56 @@ dotenv.config({ path: path.join(__dirname, "../../client/.env") });
 
 const PORT = Number(process.env.PORT) || 5000;
 const CAMERA_URL = process.env.CAMERA_URL || "";
+const MONGO_URI = process.env.MONGO_URI || "";
+
+// ── MongoDB ────────────────────────────────────────────────────────────
+let events: Collection | null = null;
+
+if (MONGO_URI) {
+     const client = new MongoClient(MONGO_URI);
+     client.connect()
+          .then(() => {
+               events = client.db("cluckingham").collection("events");
+               console.log("🥚 MongoDB connected");
+          })
+          .catch(err => console.warn("⚠️  MongoDB connection failed:", err.message));
+} else {
+     console.warn("⚠️  MONGO_URI is not set — events will not be persisted");
+}
 
 if (!CAMERA_URL) {
      console.warn("⚠️  CAMERA_URL is not set in .env");
 }
 
+// ── Events endpoints ───────────────────────────────────────────────────
+app.post("/events", async (req: Request, res: Response) => {
+     const { type, confidence, timestamp } = req.body;
+     if (!type || !timestamp) {
+          res.status(400).json({ error: "type and timestamp are required" });
+          return;
+     }
+     const doc = { type, confidence: confidence ?? null, timestamp: new Date(timestamp) };
+     if (events) {
+          await events.insertOne(doc);
+     }
+     console.log(`🐔 event: ${type} (conf=${confidence})`);
+     res.status(201).json({ ok: true });
+});
+
+app.get("/events", async (_req: Request, res: Response) => {
+     if (!events) {
+          res.json([]);
+          return;
+     }
+     const recent = await events
+          .find()
+          .sort({ timestamp: -1 })
+          .limit(50)
+          .toArray();
+     res.json(recent);
+});
+
+// ── Health ──────────────────────────────────────────────────────────────
 app.get("/health", (_req: Request, res: Response) => {
      res.json({
           ok: true,

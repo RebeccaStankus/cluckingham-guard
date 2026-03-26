@@ -9,6 +9,15 @@ dist
 /.svelte-kit
 /build
 
+# MediaMTX — platform-specific binary + config with camera credentials
+mediamtx/
+
+# Python
+ai/.venv/
+ai/__pycache__/
+ai/calibrate.jpg
+ai/*.pt
+
 # OS
 .DS_Store
 Thumbs.db
