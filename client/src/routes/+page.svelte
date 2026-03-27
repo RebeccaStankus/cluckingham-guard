@@ -25,11 +25,12 @@
    }
 
    // ── Nest status ────────────────────────────────────────────────────
+   const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
    let nestOccupied = false;
 
    async function pollNest() {
       try {
-         const res = await fetch("http://localhost:5000/events");
+         const res = await fetch(`${API_URL}/events`);
          const data = await res.json();
          if (data.length > 0) {
             nestOccupied = data[0].type === "nest_occupied";
@@ -48,7 +49,7 @@
 
    async function pollEggs() {
       try {
-         const res = await fetch("http://localhost:5000/eggs");
+         const res = await fetch(`${API_URL}/eggs`);
          const data = await res.json();
          eggCount = data.count;
       } catch {
@@ -57,7 +58,7 @@
    }
 
    async function collectEggs() {
-      await fetch("http://localhost:5000/eggs/collect", { method: "POST" });
+      await fetch(`${API_URL}/eggs/collect`, { method: "POST" });
       eggCount = 0;
    }
 

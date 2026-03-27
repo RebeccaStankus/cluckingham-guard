@@ -8,7 +8,11 @@ import { MongoClient, Collection } from "mongodb";
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5173" }));
+const ALLOWED_ORIGINS = [
+     "http://localhost:5173",
+     process.env.CLIENT_URL,
+].filter(Boolean) as string[];
+app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(express.json());
 
 dotenv.config({ path: path.join(__dirname, "../../client/.env") });
