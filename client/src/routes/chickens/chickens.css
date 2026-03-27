@@ -131,3 +131,39 @@
      justify-content: space-between;
      align-items: baseline;
 }
+.modal-actions {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-top: 0.75rem;
+}
+
+.btn-delete {
+     padding: 0.4rem 0.75rem;
+     border-radius: 6px;
+     background: none;
+     border: 1px solid #b00020;
+     color: #b00020;
+     cursor: pointer;
+}
+
+.btn-delete:hover {
+     background: #b00020;
+     color: white;
+}
+
+.btn-edit {
+     margin-top: 0.5rem;
+     padding: 0.3rem 0.6rem;
+     border-radius: 6px;
+     background: none;
+     border: 1px solid #2f848f;
+     color: #2f848f;
+     cursor: pointer;
+     font-size: 0.85rem;
+}
+
+.btn-edit:hover {
+     background: #2f848f;
+     color: white;
+}

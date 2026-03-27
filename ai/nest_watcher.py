@@ -4,6 +4,8 @@ nest_watcher.py — monitors the nest box for hen occupancy using YOLOv8.
 Usage:
   python nest_watcher.py              # run watcher, posts events to API
   python nest_watcher.py --calibrate  # save one frame to calibrate.jpg so you can measure ROI coords
+  python nest_watcher.py --debug      # save debug.jpg with all detections and ROI drawn, then exit
+  python nest_watcher.py --collect    # save training frames whenever something hen-sized is in the nest
 """
 
 import os
@@ -97,10 +99,84 @@ def calibrate(cap):
     print("Open it, find your nest box corners, then update NEST_ROI in this script.")
 
 
+def nest_filled(frame, roi, threshold=0.4):
+    """Return True if a large foreground object fills > threshold of the nest ROI."""
+    rx1, ry1, rx2, ry2 = roi
+    crop = frame[ry1:ry2, rx1:rx2]
+    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (15, 15), 0)
+    _, mask = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not contours:
+        return False
+    largest = max(contours, key=cv2.contourArea)
+    roi_area = (rx2 - rx1) * (ry2 - ry1)
+    return cv2.contourArea(largest) / roi_area >= threshold
+
+
+def collect_frames(cap):
+    """Save training frames to training_data/ whenever something hen-sized is in the nest."""
+    out_dir = Path(__file__).parent / "training_data"
+    out_dir.mkdir(exist_ok=True)
+    print(f"Collecting frames to {out_dir}")
+    print("Press Ctrl+C to stop.\n")
+    saved = 0
+    while True:
+        for _ in range(4):
+            cap.grab()
+        ret, frame = cap.read()
+        if not ret:
+            print("Stream read failed — reconnecting...")
+            time.sleep(5)
+            cap.release()
+            cap = open_stream(RTSP_URL)
+            continue
+        if nest_filled(frame, NEST_ROI):
+            ts = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            path = out_dir / f"{ts}.jpg"
+            cv2.imwrite(str(path), frame)
+            saved += 1
+            print(f"Saved {path.name}  (total: {saved})", end="\r")
+        time.sleep(30)
+
+
+def debug_frame(cap, model):
+    """Save debug.jpg showing all detections and the NEST_ROI."""
+    for _ in range(4):
+        cap.grab()
+    ret, frame = cap.read()
+    if not ret:
+        print("Failed to grab frame")
+        return
+
+    results = model(frame, verbose=False, conf=0.1)  # low conf to show everything
+    for box in results[0].boxes:
+        x1, y1, x2, y2 = (int(v) for v in box.xyxy[0])
+        conf = float(box.conf[0])
+        cls  = int(box.cls[0])
+        name = model.names[cls]
+        color = (0, 255, 0) if cls == BIRD_CLASS_ID else (180, 180, 180)
+        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+        cv2.putText(frame, f"{name} {conf:.2f}", (x1, y1 - 5),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+
+    rx1, ry1, rx2, ry2 = NEST_ROI
+    cv2.rectangle(frame, (rx1, ry1), (rx2, ry2), (0, 0, 255), 2)
+    cv2.putText(frame, "NEST_ROI", (rx1, ry1 - 6),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+
+    cv2.imwrite("debug.jpg", frame)
+    print("Saved debug.jpg — green=bird detections, grey=other, red=NEST_ROI")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--calibrate", action="store_true",
                         help="Save a reference frame to calibrate.jpg and exit")
+    parser.add_argument("--debug", action="store_true",
+                        help="Save debug.jpg with all detections and ROI drawn, then exit")
+    parser.add_argument("--collect", action="store_true",
+                        help="Save training frames whenever something hen-sized is in the nest")
     args = parser.parse_args()
 
     cap = open_stream(RTSP_URL)
@@ -110,7 +186,17 @@ def main():
         cap.release()
         return
 
+    if args.collect:
+        collect_frames(cap)
+        cap.release()
+        return
+
     model = YOLO("yolov8n.pt")  # downloads ~6 MB on first run
+
+    if args.debug:
+        debug_frame(cap, model)
+        cap.release()
+        return
     print(f"Watching nest box at {RTSP_URL}")
     print(f"ROI: {NEST_ROI}  |  interval: {FRAME_INTERVAL}s  |  debounce: {DEBOUNCE_SECS}s")
     print("Press Ctrl+C to stop.\n")

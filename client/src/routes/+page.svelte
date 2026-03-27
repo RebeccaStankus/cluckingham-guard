@@ -42,6 +42,28 @@
    pollNest();
    const nestInterval = setInterval(pollNest, 5000);
    onDestroy(() => clearInterval(nestInterval));
+
+   // ── Egg count ──────────────────────────────────────────────────────
+   let eggCount = 0;
+
+   async function pollEggs() {
+      try {
+         const res = await fetch("http://localhost:5000/eggs");
+         const data = await res.json();
+         eggCount = data.count;
+      } catch {
+         // server not reachable
+      }
+   }
+
+   async function collectEggs() {
+      await fetch("http://localhost:5000/eggs/collect", { method: "POST" });
+      eggCount = 0;
+   }
+
+   pollEggs();
+   const eggInterval = setInterval(pollEggs, 5000);
+   onDestroy(() => clearInterval(eggInterval));
 </script>
 
 <svelte:head>
@@ -52,7 +74,7 @@
    <WebRTCPlayer bind:this={player} whepUrl="http://localhost:8889/cam/whep" bind:muted bind:stream>
       <div slot="overlay" class="av-pill">
          <button type="button" class="mute-btn" aria-label={muteAria} aria-pressed={muted} title={muteTitle} on:click={onMuteClick}>{mutedIcon}</button>
-         <AudioMeter {stream} />
+         {#if !muted}<AudioMeter {stream} />{/if}
       </div>
    </WebRTCPlayer>
 </section>
@@ -61,6 +83,12 @@
    <p class="nest-status" class:occupied={nestOccupied}>
       {nestOccupied ? "A bird is on the nest!" : "No bird on the nest."}
    </p>
+   <div class="egg-count">
+      <span>{eggCount} {eggCount === 1 ? "egg" : "eggs"} in the nest box</span>
+      {#if eggCount > 0}
+         <button type="button" on:click={collectEggs}>Collected</button>
+      {/if}
+   </div>
 {/if}
 
 <style>
@@ -74,5 +102,27 @@
    .nest-status.occupied {
       opacity: 1;
       font-weight: bold;
+   }
+   .egg-count {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      color: #8de1ec;
+      font-size: 1rem;
+   }
+   .egg-count button {
+      background: none;
+      border: 1px solid #8de1ec;
+      color: #8de1ec;
+      padding: 0.2rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+   }
+   .egg-count button:hover {
+      background: #8de1ec;
+      color: rgb(15, 4, 0);
    }
 </style>

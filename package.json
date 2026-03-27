@@ -7,7 +7,6 @@
   ],
   "license": "SEE LICENSE IN LICENSE.txt",
   "scripts": {
-    "dev": "concurrently -n server,client -c yellow,green \"npm run dev -w server\" \"npm run dev -w client\"",
     "dev:client": "npm run dev -w client",
     "dev:server": "npm run dev -w server",
     "build:client": "npm run build -w client",
@@ -16,8 +15,5 @@
   },
   "dependencies": {
     "mongodb": "^6.19.0"
-  },
-  "devDependencies": {
-    "concurrently": "^9.2.1"
   }
 }

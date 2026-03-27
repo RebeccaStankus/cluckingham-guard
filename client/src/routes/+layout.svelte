@@ -8,8 +8,6 @@
       <nav class="nav-links">
          <a href="/" class="nav-link">Live Cam</a>
          <a href="/chickens" class="nav-link">Chickens</a>
-         <a href="/supplies" class="nav-link">Supplies</a>
-         <a href="/notifications" class="nav-link">Notifications</a>
       </nav>
    </div>
 </header>

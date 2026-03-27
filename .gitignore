@@ -16,6 +16,8 @@ mediamtx/
 ai/.venv/
 ai/__pycache__/
 ai/calibrate.jpg
+ai/debug.jpg
+ai/training_data/
 ai/*.pt
 
 # OS

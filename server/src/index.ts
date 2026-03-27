@@ -19,12 +19,15 @@ const MONGO_URI = process.env.MONGO_URI || "";
 
 // ── MongoDB ────────────────────────────────────────────────────────────
 let events: Collection | null = null;
+let eggs: Collection | null = null;
 
 if (MONGO_URI) {
      const client = new MongoClient(MONGO_URI);
      client.connect()
           .then(() => {
-               events = client.db("cluckingham").collection("events");
+               const db = client.db("cluckingham");
+               events = db.collection("events");
+               eggs = db.collection("eggs");
                console.log("🥚 MongoDB connected");
           })
           .catch(err => console.warn("⚠️  MongoDB connection failed:", err.message));
@@ -47,6 +50,9 @@ app.post("/events", async (req: Request, res: Response) => {
      if (events) {
           await events.insertOne(doc);
      }
+     if (type === "nest_empty" && eggs) {
+          await eggs.updateOne({ _id: "count" as any }, { $inc: { count: 1 } }, { upsert: true });
+     }
      console.log(`🐔 event: ${type} (conf=${confidence})`);
      res.status(201).json({ ok: true });
 });
@@ -62,6 +68,20 @@ app.get("/events", async (_req: Request, res: Response) => {
           .limit(50)
           .toArray();
      res.json(recent);
+});
+
+// ── Egg count endpoints ────────────────────────────────────────────────
+app.get("/eggs", async (_req: Request, res: Response) => {
+     if (!eggs) { res.json({ count: 0 }); return; }
+     const doc = await eggs.findOne({ _id: "count" as any });
+     res.json({ count: doc?.count ?? 0 });
+});
+
+app.post("/eggs/collect", async (_req: Request, res: Response) => {
+     if (eggs) {
+          await eggs.updateOne({ _id: "count" as any }, { $set: { count: 0 } }, { upsert: true });
+     }
+     res.json({ ok: true });
 });
 
 // ── Health ──────────────────────────────────────────────────────────────

@@ -4,6 +4,15 @@ import { chickens } from '$lib/server/db';
 import { ObjectId } from 'mongodb';
 import type { Chicken } from '$lib/types/chicken';
 
+export const DELETE: RequestHandler = async ({ params }) => {
+     const { id } = params;
+     if (!ObjectId.isValid(id)) return json({ error: 'Invalid id' }, { status: 400 });
+     const col = await chickens();
+     const result = await col.deleteOne({ _id: new ObjectId(id) });
+     if (result.deletedCount === 0) return json({ error: 'Not found' }, { status: 404 });
+     return json({ ok: true });
+};
+
 export const PUT: RequestHandler = async ({ params, request }) => {
      const { id } = params;                   // <-- available because this is in [id]/+server.ts
      if (!ObjectId.isValid(id)) return json({ error: 'Invalid id' }, { status: 400 });

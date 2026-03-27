@@ -46,6 +46,14 @@
 
    onMount(loadChickens);
 
+   async function deleteChicken() {
+      const id = (currentChickenData as any)._id;
+      if (!id) return;
+      await fetch(`/api/chickens/${id}`, { method: "DELETE" });
+      await loadChickens();
+      close();
+   }
+
    async function saveChicken() {
       saving = true;
       error = "";
@@ -128,14 +136,19 @@
                   {saving ? "Saving…" : "Add Chicken"}
                </button>
             </form>
-            <button on:click={close}>Close</button>
+            <div class="modal-actions">
+               <button on:click={close}>Close</button>
+               {#if !isNew}
+                  <button class="btn-delete" on:click={deleteChicken}>Delete</button>
+               {/if}
+            </div>
          </div>
       </div>
    {/if}
 
    <div class="list">
       {#each chickens as c}
-         <div class="card" on:click={() => open(c)}>
+         <div class="card">
             <div class="card__header">
                <div class="card__name">{c.name}</div>
                {#if c.dateOfHatch}<div class="card__age">{formatAge(c.dateOfHatch)}</div>{/if}
@@ -144,6 +157,7 @@
             {#if c.imageUrl}<img class="card__img" src={c.imageUrl} alt={`Photo of ${c.name}`} />{/if}
             {#if c.lastSeenAt}Last seen {c.lastSeenAt} ago.{/if}
             {#if c.description}{c.description}{/if}
+            <button class="btn-edit" on:click={() => open(c)}>Edit</button>
          </div>
       {/each}
       {#if chickens.length === 0}<p>No chickens yet.</p>{/if}
