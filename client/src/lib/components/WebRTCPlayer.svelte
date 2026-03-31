@@ -12,8 +12,20 @@
    let videoEl: HTMLVideoElement | null = null;
    let state: ConnState = "idle";
    let peerConnection: RTCPeerConnection | null = null;
-   let mouseOver = false;
+   let mouseMoving = false;
+   let mouseTimer: ReturnType<typeof setTimeout> | null = null;
    let mounted = false;
+
+   function onMouseMove() {
+      mouseMoving = true;
+      if (mouseTimer) clearTimeout(mouseTimer);
+      mouseTimer = setTimeout(() => (mouseMoving = false), 2000);
+   }
+
+   function onMouseLeave() {
+      mouseMoving = false;
+      if (mouseTimer) clearTimeout(mouseTimer);
+   }
 
    onMount(() => {
       mounted = true;
@@ -70,11 +82,11 @@
 
    $: isPlaying = state === "playing";
    $: showPlay = !isPlaying;
-   $: showStop = isPlaying && mouseOver;
+   $: showStop = isPlaying && mouseMoving;
 </script>
 
 <div class="wrap">
-   <div class="frame" role="region" on:mouseenter={() => (mouseOver = true)} on:mouseleave={() => (mouseOver = false)}>
+   <div class="frame" role="region" on:mousemove={onMouseMove} on:mouseleave={onMouseLeave}>
       <video class="video" bind:this={videoEl} autoplay playsinline {muted} controls={false} disablePictureInPicture controlslist="nodownload noplaybackrate noremoteplayback nofullscreen" aria-label="Chicken coop live camera">
          <track kind="captions" src="" label="live" />
       </video>
@@ -85,7 +97,7 @@
          </div>
       {/if}
 
-      <button class="center-btn" aria-label={showPlay ? "Start video" : "Stop video"} on:click={showPlay ? start : stop} style="opacity:{showPlay ? 1 : showStop ? 1 : 0}; pointer-events:{showPlay || showStop ? 'auto' : 'none'}">
+      <button class="center-btn" aria-label={showPlay ? "Start video" : "Stop video"} on:click={showPlay ? start : stop} style="opacity:{showPlay || showStop ? 1 : 0}; pointer-events:{showPlay || showStop ? 'auto' : 'none'}">
          {#if showPlay}▶{:else}■{/if}
       </button>
 

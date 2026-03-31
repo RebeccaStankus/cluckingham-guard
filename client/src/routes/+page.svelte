@@ -72,7 +72,7 @@
 </svelte:head>
 
 <section class="cam-page">
-   <WebRTCPlayer bind:this={player} whepUrl="http://localhost:8889/cam/whep" bind:muted bind:stream>
+   <WebRTCPlayer bind:this={player} whepUrl={import.meta.env.VITE_WHEP_URL ?? "http://localhost:8889/cam/whep"} bind:muted bind:stream>
       <div slot="overlay" class="av-pill">
          <button type="button" class="mute-btn" aria-label={muteAria} aria-pressed={muted} title={muteTitle} on:click={onMuteClick}>{mutedIcon}</button>
          {#if !muted}<AudioMeter {stream} />{/if}
